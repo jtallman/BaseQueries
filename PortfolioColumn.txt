@@ -1,0 +1,122 @@
+Add Column to add portfolio name
+
+
+= Table.AddColumn(#"Changed Type1", "Portfolio", each if [#"Cost Center "] = "8312" then "HRMS (8312)" else if [#"Cost Center "] = "8313" then "ENT. Acct- MF (8313)" else if [#"Cost Center "] = "8315" then "ENT. Shared (8315)" else if [#"Cost Center "] = "8316" then "ENT. Budget Apps (8316)" else if [#"Cost Center "] = "8317" then "ENT. State HR (8317)" else if [#"Cost Center "] = "8318" then "ENT. Acct Apps (8318)" else if [#"Cost Center "] = "8319" then "Data/BI (8319)" else if [#"Cost Center "] = "8320" then "Business Analysts (8320)" else [#"Cost Center "] )
+
+
+
+
+
+
+
+
+Total Query for the pulling data into the OFM Reports workbook 
+let
+    Source = Excel.Workbook(Web.Contents("https://watech.sp.wa.gov/ask/ets/pd/DataSets/TTS_Trending_DataSet.xlsx"), null, true),
+    #"Report 1_Sheet" = Source{[Item="Report 1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Report 1_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", type text}, {"Calendar Month", type text}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}, {"Primary Customer", type text}, {"In Governance Pool?", type text}, {"TD vs. BV", type text}, {"Governance Cust.", type text}, {"Governance Category", type text}}),
+    #"Added Custom -FTE-130" = Table.AddColumn(#"Changed Type", "FTE@130", each [Work Activity Hours]/130),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom -FTE-130",{{"FTE@130", type number}}),
+    #"Added Portfolio Column" = Table.AddColumn(#"Changed Type1", "Portfolio", each if [#"Cost Center "] = "8312" then "HRMS (8312)" else if [#"Cost Center "] = "8313" then "ENT. Acct- MF (8313)" else if [#"Cost Center "] = "8315" then "ENT. Shared (8315)" else if [#"Cost Center "] = "8316" then "ENT. Budget Apps (8316)" else if [#"Cost Center "] = "8317" then "ENT. State HR (8317)" else if [#"Cost Center "] = "8318" then "ENT. Acct Apps (8318)" else if [#"Cost Center "] = "8319" then "Data/BI (8319)" else if [#"Cost Center "] = "8320" then "Business Analysts (8320)" else [#"Cost Center "] )
+in
+    #"Added Portfolio Column"
+	
+	
+	
+	Updated Query for the design workbook that incliudes the Gov office cost center
+	
+	= Table.AddColumn(#"Changed Type1", "Portfolio", each if [#"Cost Center "] = "8312" then "HRMS (8312)" else if [#"Cost Center "] = "8313" then "ENT. Acct- MF (8313)" else if [#"Cost Center "] = "8315" then "ENT. Shared (8315)" else if [#"Cost Center "] = "8316" then "ENT. Budget Apps (8316)" else if [#"Cost Center "] = "8317" then "ENT. State HR (8317)" else if [#"Cost Center "] = "8318" then "ENT. Acct Apps (8318)" else if [#"Cost Center "] = "8319" then "Data/BI (8319)" else if [#"Cost Center "] = "8320" then "Business Analysts (8320)" else if [#"Cost Center "] = "8413" then "OFM/GOV Apps (8413)" else [#"Cost Center "] )
+	
+	
+	
+	Full Query from the Design workbook 
+	
+let
+    Source = Excel.Workbook(Web.Contents("https://watech.sp.wa.gov/ask/ets/pd/DataSets/TTS_Trending_DataSet.xlsx"), null, true),
+    #"Report 1_Sheet" = Source{[Item="Report 1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Report 1_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", type text}, {"Calendar Month", type text}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}, {"Primary Customer", type text}, {"In Governance Pool?", type text}, {"TD vs. BV", type text}, {"Governance Cust.", type text}, {"Governance Category", type text}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "FTE@130", each [Work Activity Hours]/130),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"FTE@130", type number}}),
+    #"Added Portfolio Column" = Table.AddColumn(#"Changed Type1", "Portfolio", each if [#"Cost Center "] = "8312" then "HRMS (8312)" else if [#"Cost Center "] = "8313" then "ENT. Acct- MF (8313)" else if [#"Cost Center "] = "8315" then "ENT. Shared (8315)" else if [#"Cost Center "] = "8316" then "ENT. Budget Apps (8316)" else if [#"Cost Center "] = "8317" then "ENT. State HR (8317)" else if [#"Cost Center "] = "8318" then "ENT. Acct Apps (8318)" else if [#"Cost Center "] = "8319" then "Data/BI (8319)" else if [#"Cost Center "] = "8320" then "Business Analysts (8320)" else if [#"Cost Center "] = "8413" then "OFM/GOV Apps (8413)" else [#"Cost Center "] )
+in
+    #"Added Portfolio Column"
+	
+	
+	
+	
+Just the add portfolio conditionsl column from the Trending from Raw Query in the Trending Query data 
+= Table.AddColumn(#"Cost Center Changed Type", "Portfolio", each if [Cost Center] = "8312" then "HRMS (8312)" else if [Cost Center] = "8313" then "ENT. Acct- MF (8313)" else if [Cost Center] = "8315" then "ENT. Shared (8315)" else if [Cost Center] = "8316" then "ENT. Budget Apps (8316)" else if [Cost Center] = "8317" then "ENT. State HR (8317)" else if [Cost Center] = "8318" then "ENT. Acct Apps (8318)" else if [Cost Center] = "8319" then "Data/BI (8319)" else if [Cost Center] = "8320" then "Business Analysts (8320)" else if [Cost Center] = "8413" then "OFM/GOV Apps (8413)" else [Cost Center] )	
+	
+	
+The total Query from the Trending Query 
+T:\Trending_Data
+
+let
+    Source = Excel.Workbook(Web.Contents("https://watech.sp.wa.gov/ets/InfrastructureandApplicationsdocs/TimeTrackingSystem/Trending_Data/TTS_Trending_DataSetRAW.xlsx"), null, true),
+    #"Report 1_Sheet" = Source{[Item="Report 1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Report 1_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", Int64.Type}, {"Calendar Month", Int64.Type}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}}),
+    #"Replaced Value null to N on  Gov flag" = Table.ReplaceValue(#"Changed Type",null,"N",Replacer.ReplaceValue,{"Exclude From ETS Governance Flag"}),
+    #"Changed Type HRMS to Text" = Table.TransformColumnTypes(#"Replaced Value null to N on  Gov flag",{{"HRMS Personnel Number", type text}}),
+    #"Filtered Rows Remove Future Date" = Table.SelectRows(#"Changed Type HRMS to Text", each [Work Activity Date] < #date(2017, 10, 1)),
+    #"Primary Customer  Conditional Column" = Table.AddColumn(#"Filtered Rows Remove Future Date", "Primary Customer", each if [Business Sponsor] <> "None" then [Business Sponsor] else if [Business Owner] <> "None" then [Business Owner] else "None" ),
+    #"In Gov Pool Conditional Column" = Table.AddColumn(#"Primary Customer  Conditional Column", "In Governance Pool?", each if [Exclude From ETS Governance Flag] = "Y" then "No" else "Yes" ),
+    #"TD vs BV Conditional Column" = Table.AddColumn(#"In Gov Pool Conditional Column", "TD vs. BV", each if [Work Category] = "Maintenance/Operations" then "TD" else if [Work Category] = "Administration" then "Out" else "BV" ),
+    #"Gov Cust Conditional Column" = Table.AddColumn(#"TD vs BV Conditional Column", "Governance Cust", each if [Primary Customer] = "DNR" then "No" else if [Primary Customer] = "CONSULTING ERDC" then "No" else if [Primary Customer] = "CONSULTING DRS" then "No" else if [Primary Customer] = "Other" then "No" else if [Primary Customer] = "SLA Contract" then "No" else "Yes" ),
+    #"Gov Cat Conditional Column" = Table.AddColumn(#"Gov Cust Conditional Column", "Governance Category", each if [TD vs. BV] = "Out" then "No" else "Yes" ),
+    #"FTE at 130" = Table.AddColumn(#"Gov Cat Conditional Column", "FTE@130", each [Work Activity Hours]/130),
+    #"FTE 130 Changed Type" = Table.TransformColumnTypes(#"FTE at 130",{{"FTE@130", type number}}),
+    #"Cost Center Column" = Table.AddColumn(#"FTE 130 Changed Type", "Cost Center", each Text.End([Primary Customer],4)),
+    #"Cost Center Changed Type" = Table.TransformColumnTypes(#"Cost Center Column",{{"Cost Center", type text}}),
+    #"Added Conditional Column" = Table.AddColumn(#"Cost Center Changed Type", "Portfolio", each if [Cost Center] = "8312" then "HRMS (8312)" else if [Cost Center] = "8313" then "ENT. Acct- MF (8313)" else if [Cost Center] = "8315" then "ENT. Shared (8315)" else if [Cost Center] = "8316" then "ENT. Budget Apps (8316)" else if [Cost Center] = "8317" then "ENT. State HR (8317)" else if [Cost Center] = "8318" then "ENT. Acct Apps (8318)" else if [Cost Center] = "8319" then "Data/BI (8319)" else if [Cost Center] = "8320" then "Business Analysts (8320)" else if [Cost Center] = "8413" then "OFM/GOV Apps (8413)" else [Cost Center] )
+in
+    #"Added Conditional Column"
+	
+	
+	
+New Query to use trending data for weekly Dashboard
+(fixed the HRMS Number format and skipped the future date removal) and note the custom steps names need to figure out to copy and paste statement
+let
+    Source = Excel.Workbook(File.Contents("C:\Users\jamest\SharePoint\watech-pbi-workspace-tts - Document\Data_Sets\TTSWeeklyDashboardDatSet.xlsx"), null, true),
+    #"Report 1_Sheet" = Source{[Item="Report 1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Report 1_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", Int64.Type}, {"Calendar Month", Int64.Type}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}}),
+    #"Replaced Value null to N on  Gov flag" = Table.ReplaceValue(#"Changed Type",null,"N",Replacer.ReplaceValue,{"Exclude From ETS Governance Flag"}),
+    #"Added Primary Customer Column" = Table.AddColumn(#"Replaced Value null to N on  Gov flag", "Primary Customer", each if [Business Sponsor] <> "None" then [Business Sponsor] else if [Business Owner] <> "None" then [Business Owner] else "None"),
+    #"Added In Gov Pool Column" = Table.AddColumn(#"Added Primary Customer Column", "In Governance Pool?", each if [Exclude From ETS Governance Flag] = "Y" then "No" else "Yes"),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added In Gov Pool Column",{{"Primary Customer", type text}, {"In Governance Pool?", type text}}),
+    #"Added TD vs BV Conditional Column" = Table.AddColumn(#"Changed Type1", "TD vs. BV", each if [Work Category] = "Maintenance/Operations" then "TD" else if [Work Category] = "Administration" then "Out" else "BV"),
+    #"Added Gov Cust Conditional Column" = Table.AddColumn(#"Added TD vs BV Conditional Column", "Governance Cust", each if [Primary Customer] = "DNR" then "No" else if [Primary Customer] = "CONSULTING ERDC" then "No" else if [Primary Customer] = "CONSULTING DRS" then "No" else if [Primary Customer] = "Other" then "No" else if [Primary Customer] = "SLA Contract" then "No" else "Yes"),
+    #"Added Gov Cat Conditional Column" = Table.AddColumn(#"Added Gov Cust Conditional Column", "Governance Category", each if [TD vs. BV] = "Out" then "No" else "Yes"),
+    #"Added FTE at 130 Custom" = Table.AddColumn(#"Added Gov Cat Conditional Column", "FTE@130", each [Work Activity Hours]/130),
+    #"Added Cost Center Custom" = Table.AddColumn(#"Added FTE at 130 Custom", "Cost Center", each Text.End([Primary Customer],4)),
+    #"Added Portfolio Conditional Column" = Table.AddColumn(#"Added Cost Center Custom", "Portfolio", each if [Cost Center] = "8312" then "HRMS (8312)" else if [Cost Center] = "8313" then "ENT. Acct- MF (8313)" else if [Cost Center] = "8315" then "ENT. Shared (8315)" else if [Cost Center] = "8316" then "ENT. Budget Apps (8316)" else if [Cost Center] = "8317" then "ENT. State HR (8317)" else if [Cost Center] = "8318" then "ENT. Acct Apps (8318)" else if [Cost Center] = "8319" then "Data/BI (8319)" else if [Cost Center] = "8320" then "Business Analysts (8320)" else if [Cost Center] = "8413" then "OFM/GOV Apps (8413)" else [Cost Center]),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Added Portfolio Conditional Column",{{"Portfolio", type text}, {"Cost Center", type text}, {"Governance Category", type text}, {"Governance Cust", type text}, {"TD vs. BV", type text}, {"FTE@130", type number}})
+in
+    #"Changed Type2"
+
+
+
+Copied the Query from the Treding fom RAW workbook on 2018.04.26 to use in new SPO weekly file transform--Need to pull out the Filter row line 
+let
+    Source = Excel.Workbook(Web.Contents("https://watech.sp.wa.gov/ets/InfrastructureandApplicationsdocs/TimeTrackingSystem/Trending_Data/TTS_Trending_DataSetRAW.xlsx"), null, true),
+    #"Report 1_Sheet" = Source{[Item="Report 1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Report 1_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", Int64.Type}, {"Calendar Month", Int64.Type}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}}),
+    #"Replaced Value null to N on  Gov flag" = Table.ReplaceValue(#"Changed Type",null,"N",Replacer.ReplaceValue,{"Exclude From ETS Governance Flag"}),
+    #"Changed Type HRMS to Text" = Table.TransformColumnTypes(#"Replaced Value null to N on  Gov flag",{{"HRMS Personnel Number", type text}}),
+    #"Filtered Rows Remove Future Date" = Table.SelectRows(#"Changed Type HRMS to Text", each [Work Activity Date] < #date(2018, 2, 1)),
+    #"Primary Customer  Conditional Column" = Table.AddColumn(#"Filtered Rows Remove Future Date", "Primary Customer", each if [Business Sponsor] <> "None" then [Business Sponsor] else if [Business Owner] <> "None" then [Business Owner] else "None" ),
+    #"In Gov Pool Conditional Column" = Table.AddColumn(#"Primary Customer  Conditional Column", "In Governance Pool?", each if [Exclude From ETS Governance Flag] = "Y" then "No" else "Yes" ),
+    #"TD vs BV Conditional Column" = Table.AddColumn(#"In Gov Pool Conditional Column", "TD vs. BV", each if [Work Category] = "Maintenance/Operations" then "TD" else if [Work Category] = "Administration" then "Out" else "BV" ),
+    #"Gov Cust Conditional Column" = Table.AddColumn(#"TD vs BV Conditional Column", "Governance Cust", each if [Primary Customer] = "DNR" then "No" else if [Primary Customer] = "CONSULTING ERDC" then "No" else if [Primary Customer] = "CONSULTING DRS" then "No" else if [Primary Customer] = "Other" then "No" else if [Primary Customer] = "SLA Contract" then "No" else "Yes" ),
+    #"Gov Cat Conditional Column" = Table.AddColumn(#"Gov Cust Conditional Column", "Governance Category", each if [TD vs. BV] = "Out" then "No" else "Yes" ),
+    #"FTE at 130" = Table.AddColumn(#"Gov Cat Conditional Column", "FTE@130", each [Work Activity Hours]/130),
+    #"FTE 130 Changed Type" = Table.TransformColumnTypes(#"FTE at 130",{{"FTE@130", type number}}),
+    #"Cost Center Column" = Table.AddColumn(#"FTE 130 Changed Type", "Cost Center", each Text.End([Primary Customer],4)),
+    #"Cost Center Changed Type" = Table.TransformColumnTypes(#"Cost Center Column",{{"Cost Center", type text}}),
+    #"Added Conditional Column" = Table.AddColumn(#"Cost Center Changed Type", "Portfolio", each if [Cost Center] = "8312" then "HRMS (8312)" else if [Cost Center] = "8313" then "ENT. Acct- MF (8313)" else if [Cost Center] = "8315" then "ENT. Shared (8315)" else if [Cost Center] = "8316" then "ENT. Budget Apps (8316)" else if [Cost Center] = "8317" then "ENT. State HR (8317)" else if [Cost Center] = "8318" then "ENT. Acct Apps (8318)" else if [Cost Center] = "8319" then "Data/BI (8319)" else if [Cost Center] = "8320" then "Business Analysts (8320)" else if [Cost Center] = "8413" then "OFM/GOV Apps (8413)" else [Cost Center] )
+in
+    #"Added Conditional Column"

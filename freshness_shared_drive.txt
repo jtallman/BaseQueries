@@ -1,0 +1,8 @@
+Freshness shared Drive
+
+let
+    Source = Folder.Files("\\FileDepot.eClient.wa.lcl\WaTech\Inf_App\Data_Share\ITFM_Data"),
+    #"Filtered Rows" = Table.SelectRows(Source, each ([Name] = "Weekly_AFRS_EXP_Data.xlsx")),
+    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"Content", "Extension", "Date accessed", "Date created", "Attributes"})
+in
+    #"Removed Columns"

@@ -1,0 +1,137 @@
+https://www.mssqltips.com/sqlservertip/4930/scenarios-for-using-calculated-tables-in-ssas-tabular-2016-or-power-bi-desktop--part-2/
+
+Date table DAX formula from MS AQL Tips 
+
+= ADDCOLUMNS (
+    CALENDAR (DATE(2000,1,1),DATE(2030,12,31))  -- date column for time intelligence e.g. 2017-06-04 12:00:00
+   ,"Year",YEAR([Date])                         -- e.g. 2017
+   ,"MonthOfYear",MONTH([Date])                 -- e.g. 1,2,... ,12
+   ,"Month",FORMAT ([Date],"YYYY/MM")           -- e.g. 2017/06
+   ,"YearMonthShort",FORMAT([Date],"YYYY/mmm")  -- e.g. 2017/Aug
+   ,"MonthDescShort",FORMAT([Date],"mmm")       -- e.g. Aug (combine with MonthOfYear column for proper sorting)
+   ,"MonthDesc",FORMAT([Date],"mmmm")           -- e.g. August
+   ,"DayOfWeekNumber",WEEKDAY([Date])           -- e.g. 1,2,3 ... 7 (Sunday = 1)
+   ,"DayOfWeek",FORMAT([Date],"dddd")           -- e.g. Monday
+   ,"DayOfWeekShort",FORMAT([Date],"ddd")       -- e.g. Mon
+   ,"Quarter","Q" & FORMAT([Date],"Q")          -- Q1
+   ,"YearQuarter",FORMAT([Date],"YYYY") & "/Q" & FORMAT([Date],"Q") -- e.g. 2017/Q2
+   ,"IsCurrentMonth",IF(YEAR([Date]) = YEAR(NOW()) && MONTH([Date]) = MONTH(NOW()),1,0) -- relative filter, is recalculated when model is processed)
+   
+   Creating a Date Dimension Table in Power BI
+Once the table has been created, now let’s add the DAX expression to generate desirable date values. I will be using the Calendar function to generate date values. In this example, I will be creating date values between 1st January 2015 and 31st December 2020.
+
+=CALENDAR (DATE (2015, 1, 1), DATE (2020, 12, 31))
+
+
+As above, now let’s add more attributes to the calculated table. I have provided the DAX expression for each attribute below.
+
+Year = YEAR([Date])
+
+Day = Format([Date],"DDDD")
+
+DayofMonth = DAY([Date])
+
+MonthofYear = MONTH([Date])
+
+Month = FORMAT([Date], "MMM") & " " & [Year]
+
+QuarterofYear = ROUNDUP (MONTH([Date])/3,0)
+
+Quarter = "Q" & [QuarterofYear] & " " & [Year]
+
+OrdinalDate = DATEDIFF([Year]&",1,1",[Date],DAY)+1
+
+DayofWeek = WEEKDAY([Date],2)
+
+WeekEnding = [Date] + (7- [DayofWeek])
+   
+   
+   
+   $$$$$$$$$$$$$$$$ This is what needs to go into the table creation
+   
+   = ADDCOLUMNS (
+    CALENDAR (DATE(2015,1,1),DATE(2030,12,31))  
+   ,"Year",YEAR([Date])                        
+   ,"MonthOfYear",MONTH([Date])                 
+   ,"Month",FORMAT ([Date],"YYYY/MM")          
+   ,"YearMonthShort",FORMAT([Date],"YYYY/mmm")  
+   ,"MonthDescShort",FORMAT([Date],"mmm")       
+   ,"MonthDesc",FORMAT([Date],"mmmm")           
+   ,"DayOfWeekNumber",WEEKDAY([Date])           
+   ,"DayOfWeek",FORMAT([Date],"dddd")           
+   ,"DayOfWeekShort",FORMAT([Date],"ddd")       
+   ,"Quarter","Q" & FORMAT([Date],"Q")          
+   ,"YearQuarter",FORMAT([Date],"YYYY") & "/Q" & FORMAT([Date],"Q") 
+   ,"IsCurrentMonth",IF(YEAR([Date]) = YEAR(NOW()) && MONTH([Date]) = MONTH(NOW()),1,0)
+   
+   The above worked however it sorts funny  wotuj 10/1/2015 being the first row
+   
+   
+   Fiscal year info
+   
+   Got this to work 
+  FY = IF('Date Table'[MonthOfYear]<=6,'Date Table'[Year],'Date Table'[Year]+1)
+   
+   
+   
+ Did not get the below to work   
+   Re: DAX Formulas for Fiscal Year, Fiscal Quarter and Month Short Name 
+Options
+‎07-06-2016 09:50 AM
+
+Solution for calculate the “Fiscal Year”, without date ranges condition (dynamic solution).
+ 
+Scenario:
+The formula for calculate the Fiscal Year for the “X” company is from July 1st to June 30th of the next year.
+Example:
+From July 1, 2015 to June 30, 2016 the fiscal year is “FY16”
+From July 1, 2016 to June 30, 2017 the fiscal year is “FY17”
+Expression
+Fiscal Year =
+IF ‘Date’ Month <= 6,
+THEN ‘Year’
+ELSE ‘Year’ + 1
+ 
+DAX Expression
+Note: The expected Output is “The phrase FY plus the last 2 digits of the Fiscal Year”
+ 
+DAX Formula:
+
+ 
+Fiscal Year =
+  CONCATENATE("FY",
+                IF(MONTH('Table'[Date]) <=6,
+                       VALUE(FORMAT('Table'[Date],"YY")),
+                       VALUE(FORMAT('Table'[Date],"YY")) +1
+                     )
+                                )
+								
+								
+								
+								
+								
+								
+								
+								
+								
+Fiscal Year =
+CONCATENATE (
+    "FY",
+    IF (
+        MONTH ( 'Table'[Date] ) <= 6,
+        VALUE ( FORMAT ( 'Table'[Date], "YY" ) ),
+        VALUE ( FORMAT ( 'Table'[Date], "YY" ) ) + 1
+    )
+)
+
+Could not get the above to worked
+
+
+1. First Step
+Create 2 new column on your DATA report:
+   1. Month = MONTH(Table[Date])
+   2. Year = YEAR(Table[Date])
+ 
+2. Fiscal Year
+   Create a new column for Fiscal Year:
+   FY = IF(AND('Calendar'[Month Sort]>=4,'Calendar'[Month Sort]<=12),'Calendar'[Year]+1,'Calendar'[Year])

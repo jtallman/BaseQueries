@@ -1,0 +1,9 @@
+Data Freshness
+
+let
+    Source = Folder.Files("C:\Users\jamest\SharePoint\watech-pbi-workspace-tts - Document"),
+    #"Filtered Rows" = Table.SelectRows(Source, each ([Name] = "TTSWeeklyTransformDataSet.xlsx"))
+in
+    #"Filtered Rows"
+	
+	

@@ -1,0 +1,6 @@
+Add Offset Month to TTS data An easy way to add a month offset to a file with a transaction date 
+
+it uses an add column with the formula below 
+
+= Table.AddColumn(#"Changed Type", "CurMonthOffset", each (Date.Year([Work Activity Date]) - Date.Year(DateTime.LocalNow()) ) * 12
++ Date.Month([Work Activity Date]) - Date.Month(DateTime.LocalNow()), Int64.Type)
