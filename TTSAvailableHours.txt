@@ -1,0 +1,31 @@
+TTSAvailableHours  to date 
+
+
+The one that worked
+MTD2 TTS Available = CALCULATE(SUM(Ultimate_Calendar[TTSAvailableHours]), DATESMTD(Ultimate_Calendar[Date] ), FILTER(Ultimate_Calendar, Ultimate_Calendar[Date].[Date] <TODAY() ))
+
+MTD2 TTS Available =
+CALCULATE (
+    SUM ( Ultimate_Calendar[TTSAvailableHours] ),
+    DATESMTD ( Ultimate_Calendar[Date] ),
+    FILTER ( Ultimate_Calendar, Ultimate_Calendar[Date].[Date] < TODAY () )
+)
+
+
+Did not work 
+
+MTD TTS Available =
+TOTALMTD (
+    SUM ( Ultimate_Calendar[TTSAvailableHours] ),
+    Ultimate_Calendar[Date].[Date]
+)
+
+
+Fro Recorded hours
+
+RecordedHours = SUM(TTS_Daily[Work Activity Hours])
+
+
+M Code to add a Avalable hours column to the date table 
+
+= Table.AddColumn(#"Changed Type1", "TTSAvailableHours ", each if[WeekdayWeekend] = "Weekday" then 8 else 0)

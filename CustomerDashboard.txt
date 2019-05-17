@@ -1,0 +1,27 @@
+Formulas for the customer dashboard
+
+Work Activity Hours Fiscal YTD = 
+CALCULATE(
+	SUM('TTSDatasetforTrend'[Work Activity Hours]),
+	'TTSDatasetforTrend'[Work Activity Date] > DATE(2018, 7, 01)
+	
+	
+	Work Activity Hours Last Month = 
+CALCULATE(
+	SUM('TTSDatasetforTrend'[Work Activity Hours]),
+	PREVIOUSMONTH ('TTSDatasetforTrend'[Work Activity Date]))
+	
+	
+	'TTSDatasetforTrend'[Work Activity Date] > DATE(2018, 7, 01)
+	
+	
+	=CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSMONTH('DateTime'[DateKey]))
+	
+	=CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSMONTH('DateTime'[DateKey]))
+	
+	Tried both neither works 
+	
+	Work Activity Hours Last Month = 
+CALCULATE(
+	SUM('TTSDatasetforTrend'[Work Activity Hours]),
+	PREVIOUSMONTH ('DimDateTbl'[DateKey]))

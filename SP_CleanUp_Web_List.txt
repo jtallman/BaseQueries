@@ -1,0 +1,38 @@
+Working SP Cleanup
+
+let
+    Source = Web.Page(File.Contents("\\filedepot.eclient.wa.lcl\ofm\its\Data_Share\SharePoint_Cleanup\PermissionRptOFM_FR_ESP.htm")),
+    Evaluate = Table.AddColumn(Source, "Custom", each Expression.Evaluate([Tables], #shared)),
+    #"Filtered Rows" = Table.SelectRows(Evaluate, each Text.StartsWith([Caption], "Site:"))
+in
+    #"Filtered Rows"
+	
+	
+	
+Orginal
+
+let
+    Source = #table({"Tables"}, {{"Actuals"}, {"Budget"}}),
+    Evaluate = Table.AddColumn(Source, "Custom", each Expression.Evaluate([Tables], #shared)),
+    Expand = Table.ExpandTableColumn(Evaluate, "Custom", List.Union(List.Transform(Evaluate[Custom], each Table.ColumnNames(_))))
+in
+    Expand
+	
+	
+	
+Sort of working 	
+let
+    Source = Web.Page(File.Contents("\\filedepot.eclient.wa.lcl\ofm\its\Data_Share\SharePoint_Cleanup\PermissionRptOFM_FR_ESP.htm")),
+    Evaluate = Table.AddColumn(Source, "Custom", each Expression.Evaluate([Caption], #shared)),
+    #"Filtered Rows" = Table.SelectRows(Evaluate, each Text.StartsWith([Caption], "Site:"))
+in
+    #"Filtered Rows"
+	
+Liking this just the firs columns 	
+	let
+    Source = Web.Page(File.Contents("\\filedepot.eclient.wa.lcl\ofm\its\Data_Share\SharePoint_Cleanup\PermissionRptOFM_FR_ESP.htm")),
+    #"Filtered Rows" = Table.SelectRows(Source, each Text.StartsWith([Caption], "Site:")),
+    #"Expanded Data" = Table.ExpandTableColumn(#"Filtered Rows", "Data", {"Users/Groups", "Type", "User Name", "Permissions"}, {"Data.Users/Groups", "Data.Type", "Data.User Name", "Data.Permissions"})
+  
+in
+    #"Expanded Data"

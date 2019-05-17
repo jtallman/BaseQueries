@@ -1,0 +1,43 @@
+The Query to pull expendature data from the monthly CTS billing files 
+
+let
+    Source = Folder.Files("F:\CTS_Billing_ESF\FY18_MonthlyBillingData"),
+    #"Split Column by Position" = Table.SplitColumn(Source, "Name", Splitter.SplitTextByPositions({0, 7}, false), {"Name.1", "Name.2"}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Split Column by Position",{{"Name.1", type text}, {"Name.2", type text}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Name.1", "Year_Month"}, {"Name.2", "Data"}}),
+    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"Data", "Year_Month", "Content"}),
+    #"Filtered Hidden Files1" = Table.SelectRows(#"Removed Other Columns", each [Attributes]?[Hidden]? <> true),
+    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File from ESF_CTS_Billing", each #"Transform File from ESF_CTS_Billing"([Content])),
+    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Year_Month", "Transform File from ESF_CTS_Billing"}),
+    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File from ESF_CTS_Billing", Table.ColumnNames(#"Transform File from ESF_CTS_Billing"(#"Sample File (2)"))),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Expanded Table Column1",{{"AgencyCodeAndName", type text}, {"Billing Account Detail", type text}, {"Customer Business Area", type text}, {"Sub-Account Name", type text}, {"CTS Service Name", type text}, {"Service Offering #", type text}, {"Service Offering Name", type text}, {"Cost Center", type text}, {"Unit Count", type number}, {"Billing Amount", Currency.Type}, {"Description", type text}, {"Dropped Billing Yes-No", type text}, {"Month", Int64.Type}, {"Year", Int64.Type}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Changed Type1",{"AgencyCodeAndName", "Customer Business Area"}),
+    #"Inserted Parsed Date" = Table.AddColumn(#"Removed Columns", "Parse", each Date.From(DateTimeZone.From([Year_Month])), type date),
+    #"Inserted End of Month" = Table.AddColumn(#"Inserted Parsed Date", "End of Month", each Date.EndOfMonth([Parse]), type date),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Inserted End of Month",{{"End of Month", type date}}),
+    #"Filtered Rows" = Table.SelectRows(#"Changed Type2", each Text.Contains([Billing Account Detail], "8312CC") or Text.Contains([Billing Account Detail], "8317CC"))
+in
+    #"Filtered Rows"
+	
+	
+	
+	With source changed to OFM files
+	let
+    Source = Folder.Files("F:\CTS_Billing_OFM\MonthyFiles"),
+    #"Split Column by Position" = Table.SplitColumn(Source, "Name", Splitter.SplitTextByPositions({0, 7}, false), {"Name.1", "Name.2"}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Split Column by Position",{{"Name.1", type text}, {"Name.2", type text}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Name.1", "Year_Month"}, {"Name.2", "Data"}}),
+    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"Data", "Year_Month", "Content"}),
+    #"Filtered Hidden Files1" = Table.SelectRows(#"Removed Other Columns", each [Attributes]?[Hidden]? <> true),
+    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File from ESF_CTS_Billing", each #"Transform File from ESF_CTS_Billing"([Content])),
+    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Year_Month", "Transform File from ESF_CTS_Billing"}),
+    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File from ESF_CTS_Billing", Table.ColumnNames(#"Transform File from ESF_CTS_Billing"(#"Sample File (2)"))),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Expanded Table Column1",{{"AgencyCodeAndName", type text}, {"Billing Account Detail", type text}, {"Customer Business Area", type text}, {"Sub-Account Name", type text}, {"CTS Service Name", type text}, {"Service Offering #", type text}, {"Service Offering Name", type text}, {"Cost Center", type text}, {"Unit Count", type number}, {"Billing Amount", Currency.Type}, {"Description", type text}, {"Dropped Billing Yes-No", type text}, {"Month", Int64.Type}, {"Year", Int64.Type}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Changed Type1",{"AgencyCodeAndName", "Customer Business Area"}),
+    #"Inserted Parsed Date" = Table.AddColumn(#"Removed Columns", "Parse", each Date.From(DateTimeZone.From([Year_Month])), type date),
+    #"Inserted End of Month" = Table.AddColumn(#"Inserted Parsed Date", "End of Month", each Date.EndOfMonth([Parse]), type date),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Inserted End of Month",{{"End of Month", type date}}),
+    #"Filtered Rows" = Table.SelectRows(#"Changed Type2", each Text.Contains([Billing Account Detail], "8312CC") or Text.Contains([Billing Account Detail], "8317CC"))
+in
+    #"Filtered Rows"
+	
