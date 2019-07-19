@@ -1,0 +1,17 @@
+Query for last modified of excel files in the business operations teams site 
+
+let
+    Source = SharePoint.Tables("https://stateofwa.sharepoint.com/sites/OFM-TeamsITSBusinessOperations/", [ApiVersion = 15]),
+    #"8baa01ab-7cf8-4360-9f3f-f87b1ec95c26" = Source{[Id="8baa01ab-7cf8-4360-9f3f-f87b1ec95c26"]}[Items],
+    #"Renamed Columns" = Table.RenameColumns(#"8baa01ab-7cf8-4360-9f3f-f87b1ec95c26",{{"ID", "ID.1"}}),
+    #"Filtered Rows" = Table.SelectRows(#"Renamed Columns", each [Title] <> null and [Title] <> ""),
+    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"Id", "Modified", "Title", "FieldValuesAsText", "File", "Properties"}),
+    #"Expanded Properties" = Table.ExpandRecordColumn(#"Removed Other Columns", "Properties", {"vti_mediaservicefastmetadata", "vti_mediaservicemetadata"}, {"Properties.vti_mediaservicefastmetadata", "Properties.vti_mediaservicemetadata"}),
+    #"Expanded FieldValuesAsText" = Table.ExpandRecordColumn(#"Expanded Properties", "FieldValuesAsText", {"Modified", "Title"}, {"FieldValuesAsText.Modified", "FieldValuesAsText.Title"}),
+    #"Expanded File" = Table.ExpandRecordColumn(#"Expanded FieldValuesAsText", "File", {"Name", "TimeLastModified", "ModifiedBy"}, {"File.Name", "File.TimeLastModified", "File.ModifiedBy"}),
+    #"Filtered Rows1" = Table.SelectRows(#"Expanded File", each Text.Contains([File.Name], ".xls")),
+    #"Expanded File.ModifiedBy" = Table.ExpandRecordColumn(#"Filtered Rows1", "File.ModifiedBy", {"LoginName", "Email", "UserPrincipalName"}, {"File.ModifiedBy.LoginName", "File.ModifiedBy.Email", "File.ModifiedBy.UserPrincipalName"}),
+    #"Removed Columns" = Table.RemoveColumns(#"Expanded File.ModifiedBy",{"Modified", "FieldValuesAsText.Title", "File.TimeLastModified", "File.ModifiedBy.LoginName", "File.ModifiedBy.Email", "Properties.vti_mediaservicefastmetadata", "Properties.vti_mediaservicemetadata"}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"Id", type text}, {"Title", type text}, {"File.Name", type text}, {"File.ModifiedBy.UserPrincipalName", type text}, {"FieldValuesAsText.Modified", type text}})
+in
+    #"Changed Type"
