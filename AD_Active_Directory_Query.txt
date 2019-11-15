@@ -1,0 +1,74 @@
+AD Active Directory Queries 
+
+
+Reworked  inetOrgPerson OFM to include phone number 
+
+
+
+
+
+
+
+
+
+Person OFM
+
+let
+    Source = ActiveDirectory.Domains("eclient.wa.lcl"),
+    EClient.wa.lcl = Source{[Domain="EClient.wa.lcl"]}[#"Object Categories"],
+    person1 = EClient.wa.lcl{[Category="person"]}[Objects],
+    #"Filtered Rows" = Table.SelectRows(person1, each Text.Contains([displayName], "(OFM)")),
+    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"person"}),
+    #"Expanded top" = Table.ExpandRecordColumn(#"Removed Columns", "top", {"cn", "msDS-PrincipalName", "name"}, {"top.cn", "top.msDS-PrincipalName", "top.name"})
+in
+    #"Expanded top"
+	
+	
+inetOrgPerson OFM
+
+let
+    Source = ActiveDirectory.Domains("eclient.wa.lcl"),
+    EClient.wa.lcl = Source{[Domain="EClient.wa.lcl"]}[#"Object Categories"],
+    inetOrgPerson1 = EClient.wa.lcl{[Category="inetOrgPerson"]}[Objects],
+    #"Filtered Rows" = Table.SelectRows(inetOrgPerson1, each Text.Contains([displayName], "(OFM)")),
+    #"Expanded inetOrgPerson" = Table.ExpandRecordColumn(#"Filtered Rows", "inetOrgPerson", {"employeeNumber", "mail"}, {"inetOrgPerson.employeeNumber", "inetOrgPerson.mail"}),
+    #"Expanded mailRecipient" = Table.ExpandRecordColumn(#"Expanded inetOrgPerson", "mailRecipient", {"cn", "department", "mail", "mailNickname"}, {"mailRecipient.cn", "mailRecipient.department", "mailRecipient.mail", "mailRecipient.mailNickname"}),
+    #"Expanded msExchCustomAttributes" = Table.ExpandRecordColumn(#"Expanded mailRecipient", "msExchCustomAttributes", {"extensionAttribute15"}, {"msExchCustomAttributes.extensionAttribute15"}),
+    #"Expanded top" = Table.ExpandRecordColumn(#"Expanded msExchCustomAttributes", "top", {"msDS-PrincipalName"}, {"top.msDS-PrincipalName"}),
+    #"Expanded securityPrincipal" = Table.ExpandRecordColumn(#"Expanded top", "securityPrincipal", {"sAMAccountName"}, {"securityPrincipal.sAMAccountName"}),
+    #"Removed Columns" = Table.RemoveColumns(#"Expanded securityPrincipal",{"user", "organizationalPerson", "person", "xyloc-general", "xyloc-userpref", "posixAccount", "shadowAccount", "msExchOmaUser", "msExchBaseClass", "msExchIMRecipient", "msExchCertificateInformation", "msExchMultiMediaUser", "msExchMailStorage", "msDS-CloudExtensions"})
+in
+    #"Removed Columns"
+	
+	
+
+person GOV
+
+let
+    Source = ActiveDirectory.Domains("ssv.wa.lcl"),
+    EClient.wa.lcl = Source{[Domain="EClient.wa.lcl"]}[#"Object Categories"],
+    person1 = EClient.wa.lcl{[Category="person"]}[Objects],
+    #"Filtered Rows" = Table.SelectRows(person1, each Text.Contains([displayName], "(GOV)")),
+    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"person"}),
+    #"Expanded top" = Table.ExpandRecordColumn(#"Removed Columns", "top", {"cn", "msDS-PrincipalName", "name"}, {"top.cn", "top.msDS-PrincipalName", "top.name"})
+in
+    #"Expanded top"
+	
+	
+inetOrgPerson GOV
+
+let
+    Source = ActiveDirectory.Domains("ssv.wa.lcl"),
+    EClient.wa.lcl = Source{[Domain="EClient.wa.lcl"]}[#"Object Categories"],
+    inetOrgPerson1 = EClient.wa.lcl{[Category="inetOrgPerson"]}[Objects],
+    #"Filtered Rows" = Table.SelectRows(inetOrgPerson1, each Text.Contains([displayName], "(GOV)")),
+    #"Expanded inetOrgPerson" = Table.ExpandRecordColumn(#"Filtered Rows", "inetOrgPerson", {"employeeNumber", "mail"}, {"inetOrgPerson.employeeNumber", "inetOrgPerson.mail"}),
+    #"Expanded mailRecipient" = Table.ExpandRecordColumn(#"Expanded inetOrgPerson", "mailRecipient", {"cn", "department", "mail", "mailNickname"}, {"mailRecipient.cn", "mailRecipient.department", "mailRecipient.mail", "mailRecipient.mailNickname"}),
+    #"Expanded msExchCustomAttributes" = Table.ExpandRecordColumn(#"Expanded mailRecipient", "msExchCustomAttributes", {"extensionAttribute15"}, {"msExchCustomAttributes.extensionAttribute15"}),
+    #"Expanded top" = Table.ExpandRecordColumn(#"Expanded msExchCustomAttributes", "top", {"msDS-PrincipalName"}, {"top.msDS-PrincipalName"}),
+    #"Expanded securityPrincipal" = Table.ExpandRecordColumn(#"Expanded top", "securityPrincipal", {"sAMAccountName"}, {"securityPrincipal.sAMAccountName"}),
+    #"Removed Columns" = Table.RemoveColumns(#"Expanded securityPrincipal",{"user", "organizationalPerson", "person", "xyloc-general", "xyloc-userpref", "posixAccount", "shadowAccount", "msExchOmaUser", "msExchBaseClass", "msExchIMRecipient", "msExchCertificateInformation", "msExchMultiMediaUser", "msExchMailStorage", "msDS-CloudExtensions"})
+in
+    #"Removed Columns"
+	
+	

@@ -17,3 +17,25 @@ let
     #"Inserted Month Name" = Table.AddColumn(#"Renamed Columns1", "Month Name", each Date.MonthName([Date]), type text)
 in
     #"Inserted Month Name"
+	
+	
+	
+	
+	
+	let
+    enrollmentNumber = "5247333",
+    optionalParameters = [ numberOfMonth = 12, dataType="DetailCharges" ],
+    data = MicrosoftAzureConsumptionInsights.Contents(enrollmentNumber, optionalParameters),
+    // pulled out tag type
+    #"Inserted Text Between Delimiters" = Table.AddColumn(data, "Tag Type", each Text.BetweenDelimiters([Tags], """", """"), type text),
+    // Cost to Dpllars
+    #"Changed Type Cost to Dollars" = Table.TransformColumnTypes(#"Inserted Text Between Delimiters",{{"Cost", Currency.Type}}),
+    // pulled out tag value
+    #"Inserted Text Between Delimiters1" = Table.AddColumn(#"Changed Type Cost to Dollars", "Tag Value", each Text.BetweenDelimiters([Tags], """", """", 2, 0), type text),
+    #"Inserted Year" = Table.AddColumn(#"Inserted Text Between Delimiters1", "Year.1", each Date.Year([Date]), Int64.Type),
+    #"Renamed Columns" = Table.RenameColumns(#"Inserted Year",{{"Year.1", "Year Number"}}),
+    #"Inserted Month" = Table.AddColumn(#"Renamed Columns", "Month.1", each Date.Month([Date]), Int64.Type),
+    #"Renamed Columns1" = Table.RenameColumns(#"Inserted Month",{{"Month.1", "Month Number"}}),
+    #"Inserted Month Name" = Table.AddColumn(#"Renamed Columns1", "Month Name", each Date.MonthName([Date]), type text)
+in
+    #"Inserted Month Name"
