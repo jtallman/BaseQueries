@@ -1,4 +1,4 @@
-Measures from the TEAMs Excel TTS Review file 
+Measures from the TEAMs Excel TTS Review file and the TTS for Tactical Meeting Power BI files 
 Needs Ultimate Calendar Table below to work
 
 
@@ -18,13 +18,25 @@ TTS Available MTD
 Staff Count
 	=DISTINCTCOUNT(TTS_Daily_w_add_columns[Full Name])
 	
+Staff Count 
+	= DISTINCTCOUNT(TTS_Daily[Full Name])
+	
 Percent MTD
 	=[Sum of Work Activity Hours]/[TTS Available MTD]
 	
 Percent Month Available
 	=[Sum of Work Activity Hours]/[TTSAvailableHours for Period]
 	
-
+Gov Pool Staff 
+	= CALCULATE([Staff Active Count], TTS_Daily[In Governance Pool?] ="Yes")
+	
+Staff Active Count 
+	= CALCULATE([Staff Count],TTS_Daily[Staff Active Flag] = "y")	
+	
+Deleted this measure because it did not work - Then renamed MTD2
+	MTD TTS Available = TOTALMTD(SUM(Ultimate_Calendar[TTSAvailableHours]), Ultimate_Calendar[Date].[Date])
+	
+	
 
 Ultimate Calendar Table
 

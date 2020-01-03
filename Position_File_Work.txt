@@ -1,0 +1,54 @@
+Position File Work
+
+
+This is Dax 
+= Table.AddColumn(#"Added Custom", "Corrected Pin", each FORMAT([#"PERSON (PRNR)"],"00000000"))
+
+M version
+= Table.AddColumn(#"Added Custom", "Corrected Pin", each Text.PadStart(Text.From([#"PERSON (PRNR)"]),8,"0"))
+
+In the custom column box Corrected PRNR in the New Column Name
+And this in the Fourmula box 
+= Text.PadStart(Text.From([#"PERSON (PRNR)"]),8,"0"))
+
+
+the import stage M Query if you add a new column - you can use this formula:
+ 
+If it is a number you are trying to convert do this:
+Text.PadStart(Text.From([Column]),5,"0"))
+The "Text.From([Column])" is needed only to change the format from number to text as numbers cannot be formatted into text.
+ 
+If it is in Text format already do this:
+Text.PadStart([Column],5,"0")
+ 
+In the DAX report you can use the following:
+FORMAT(['Column'),"000")
+ 
+Hope this works for you.
+Soren
+
+From <https://community.powerbi.com/t5/Desktop/Leading-Zero/td-p/23131/page/2> 
+
+https://docs.microsoft.com/en-us/powerquery-m/text-padstart
+
+@@@@@@@@@@@@@
+Formulas from 2019.11.01 file
+
+= Table.AddColumn(#"Changed Type", "Pin LEN", each Text.Length([#"PERSON (PRNR)"]))
+
+= Table.AddColumn(#"Added Custom Pin Len", "Corrected Pin", each Text.PadStart([#"PERSON (PRNR)"],8,"0"))
+
+= Table.AddColumn(#"Added Custom correct pin", "Cost Center.1", each Text.Middle([COST CENTER],3,4))
+
+
+full Query
+
+let
+    Source = Excel.CurrentWorkbook(){[Name="costobj201911"]}[Content],
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"BUSINESS AREA", type text}, {"BUSINESS AREA DESC.", type text}, {"PERSONNEL AREA", type text}, {"PERSONNEL AREA DESC.", type text}, {"PERSONNEL SUBAREA", type text}, {"PERSONNEL SUBAREA DESC.", type text}, {"ORGANIZATION UNIT", type text}, {"ORGANIZATION UNIT DESCRIPTION", type text}, {"POSITION", type text}, {"POSITION SHORT TEXT", type text}, {"POSITION TITLE", type text}, {"POS START DATE", type datetime}, {"POS END DATE", type datetime}, {"VACANCY STATUS", type text}, {"PERSON (PRNR)", type text}, {"EMPLOYEE NAME", type text}, {"COST DIST. START", type datetime}, {"COST DIST. END", type datetime}, {"COST CENTER", type text}, {"COST CENTER DESC.", type text}, {"FUND", type text}, {"FUND DESC.", type text}, {"FUNCTIONAL AREA", type text}, {"FUNCTIONAL AREA DESC.", type text}, {"COST OBJECT", type text}, {"COST OBJECT DESC.", type text}, {"PROJECT", type text}, {"PROJECT DESC.", type text}, {"ALLOCATION", type text}, {"ALLOCATION DESC.", type text}, {"COST DIST PERCENTAGE", Int64.Type}, {"BUDGETED", type text}, {"RETIREMENT ELIGIBLE", type text}, {"EE_GRP", type text}, {"EE GROUP DESC", type text}, {"EE_SGRP", type text}, {"EE SUBGROUP DESC.", type text}, {"TELEWORK (EE)", type text}, {"FLEXTIME (EE)", type text}, {"FLEXTIME HOURS FROM", type text}, {"FLEXTIME HOURS TO", type text}, {"COMPRESSED WORKWEEK (EE)", type text}, {"TELEWORK (POS)", type text}, {"FLEXTIME (POS)", type text}, {"COMPRESSED WORKWEEK (POS)", type text}, {"RELATED  JOB CLASS", type text}, {"JOB CLASS DESCRIPTION", type text}, {"PAY SCALE/GRADE TYPE", type text}, {"PAYSCALE/GRADE AREA", type text}, {"PAY SCALE/GRADE GROUP", type text}, {"LOWEST ELIGIBLE LEVEL", type text}, {"HIGHEST ELIGIBLE LEVEL", type text}}),
+    #"Added Custom Pin Len" = Table.AddColumn(#"Changed Type", "Pin LEN", each Text.Length([#"PERSON (PRNR)"])),
+    #"Added Custom correct pin" = Table.AddColumn(#"Added Custom Pin Len", "Corrected Pin", each Text.PadStart([#"PERSON (PRNR)"],8,"0")),
+    #"Added Custom Cost Center" = Table.AddColumn(#"Added Custom correct pin", "Cost Center.1", each Text.Middle([COST CENTER],3,4)),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom Cost Center",{{"Pin LEN", type text}, {"Corrected Pin", type text}, {"Cost Center.1", type text}})
+in
+    #"Changed Type1"
