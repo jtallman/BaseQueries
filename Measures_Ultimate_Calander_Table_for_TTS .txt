@@ -1,0 +1,38 @@
+Measures Ultimate Calander Table for TTS 
+
+
+TTSAvailableHours = SUM(Ultimate_Calendar[TTSAvailableHours])
+
+MTD TTS Available = CALCULATE(SUM(Ultimate_Calendar[TTSAvailableHours]), DATESMTD(Ultimate_Calendar[Date] ), FILTER(Ultimate_Calendar, Ultimate_Calendar[Date].[Date] <TODAY() ))
+
+
+Staff Count = DISTINCTCOUNT(TTS_Daily[Full Name])
+
+Staff Active Count = CALCULATE([Staff Count],TTS_Daily[Staff Active Flag] = "y")
+
+RecordedHours = SUM(TTS_Daily[Work Activity Hours])
+
+Minimum Work Activity Date = MIN(TTS_Daily[Work Activity Date])
+
+Maximum Work Activity Date = MAX(TTS_Daily[Work Activity Date])
+
+Hours Percent = (DIVIDE([RecordedHours], [TTSAvailableHours] )*100)
+
+Gov Pool Staff = CALCULATE([Staff Active Count], TTS_Daily[In Governance Pool?] ="Yes")
+
+Duration = [Maximum Work Activity Date]-[Minimum Work Activity Date]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
