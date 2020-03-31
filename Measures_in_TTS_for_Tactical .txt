@@ -1,0 +1,22 @@
+Measures in TTS for Tactical PBIX File 
+
+Duration = [Maximum Work Activity Date]-[Minimum Work Activity Date]
+
+Gov Pool Staff = CALCULATE([Staff Active Count], TTS_Daily[In Governance Pool?] ="Yes")
+
+Hours Percent = (DIVIDE([RecordedHours], [TTSAvailableHours] )*100)
+
+Maximum Work Activity Date = MAX(TTS_Daily[Work Activity Date])
+
+Minimum Work Activity Date = MIN(TTS_Daily[Work Activity Date])
+
+MTD TTS Available = CALCULATE(SUM(Ultimate_Calendar[TTSAvailableHours]), DATESMTD(Ultimate_Calendar[Date] ), FILTER(Ultimate_Calendar, Ultimate_Calendar[Date].[Date] <TODAY() ))
+
+RecordedHours = SUM(TTS_Daily[Work Activity Hours])
+
+Staff Active Count = CALCULATE([Staff Count],TTS_Daily[Staff Active Flag] = "y")
+
+Staff Count = DISTINCTCOUNT(TTS_Daily[Full Name])
+
+TTSAvailableHours = SUM(Ultimate_Calendar[TTSAvailableHours])
+

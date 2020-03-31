@@ -1,0 +1,13 @@
+Query to pull Staff list from  Asset Management PR list 
+
+let
+    Source = Excel.Workbook(File.Contents("\\filedepot.eclient.wa.lcl\OFM\_Common\Purchasing, IT Software\Product Licensing Info\_Staff_ORG\FI-001 - Distribution of Payroll for Asset Managment Costing .xlsx"), null, true),
+    #"Asset Management List_Sheet" = Source{[Item="Asset Management List",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"Asset Management List_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Name - Full", type text}, {"Agency", type text}, {"Organizational Unit", type text}, {"Fund", type text}, {"Appropriation Index", type text}, {"AFRS Program Index", type text}, {"Org Index", type text}, {"Project", type text}, {"Sub-Project", type text}, {"Project Phase", type text}, {"Project Type", type text}, {"Current Document Num", type text}, {"Pay Period End Date", type date}, {"Employee", type text}, {"Employee Name", type text}, {"Cap.Utilization Lvl", Int64.Type}, {"Position", type text}, {"Short Position", type text}, {"Staff Months", type number}, {"Supervisor Name", type text}, {"Supervisor Personnel Number", type text}, {"Supervisor Position", type text}, {"Supervisor Position Abbr", type text}, {"Supervisor Position Code", type text}}),
+    #"Added Custom Corrected EE PIN" = Table.AddColumn(#"Changed Type", "HRMS EE Number", each Text.PadStart([Employee],8,"0"), type text),
+    #"Added Custom Supervisor HRMS" = Table.AddColumn(#"Added Custom Corrected EE PIN", "Supervisor HRMS Number", each Text.PadStart([Supervisor Personnel Number],8,"0"), type text),
+    #"Removed Duplicates HRMS EE" = Table.Distinct(#"Added Custom Supervisor HRMS", {"HRMS EE Number"}),
+    #"Removed Other Columns" = Table.SelectColumns(#"Removed Duplicates HRMS EE",{"HRMS EE Number", "Name - Full", "Agency", "Organizational Unit", "Position", "Short Position", "Supervisor Name", "Supervisor HRMS Number", "Supervisor Position Abbr", "Supervisor Position Code", "Supervisor Position"})
+in
+    #"Removed Other Columns"
