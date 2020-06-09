@@ -1,0 +1,10 @@
+DevOps query for HR Labor 
+
+let
+    Source = VSTS.AnalyticsViews("watech-vsts", "hrlabor", []),
+    #"f255d76f-4fcc-4571-98d5-ab970176fef1_Table" = Source{[Id="f255d76f-4fcc-4571-98d5-ab970176fef1",Kind="Table"]}[Data],
+    #"Filtered Rows" = Table.SelectRows(#"f255d76f-4fcc-4571-98d5-ab970176fef1_Table", each [Date] > #date(2019, 1, 1)),
+    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each [Iteration Start Date] <> null and [Iteration Start Date] <> ""),
+    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows1",{{"Iteration Start Date", type date}, {"Iteration End Date", type date}})
+in
+    #"Changed Type"
