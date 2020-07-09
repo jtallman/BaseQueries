@@ -1,0 +1,21 @@
+TTS Daily from FileShare TTS Query
+
+let
+    Source = Excel.Workbook(File.Contents("\\FileDepot.eClient.wa.lcl\OFM\ITS\Data_Share\TTS_Data\TTS_Daily.xlsx"), null, true),
+    TTS_Daily_Sheet = Source{[Item="TTS_Daily",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(TTS_Daily_Sheet, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Calendar Year", Int64.Type}, {"Calendar Month", Int64.Type}, {"Full Name", type text}, {"Exclude From ETS Governance Flag", type text}, {"Work Unit", type text}, {"Work Sub Unit", type text}, {"Project", type text}, {"Component", type text}, {"Work Category", type text}, {"Work Activity Group", type text}, {"Work Activity Hours", type number}, {"Business Sponsor", type text}, {"Business Owner", type text}, {"Work Activity Task", type text}, {"Work Activity Comment", type text}, {"Component Active Flag", type text}, {"Project Active Flag", type text}, {"Calendar Year/Month", type date}, {"Work Activity Date", type date}, {"HRMS Personnel Number", type text}, {"Role", type text}, {"Project Acronym", type text}, {"Component Acronym", type text}, {"Apptio Tower", type text}, {"Apptio Subtower", type text}, {"Time Entry By Email Address", type text}, {"Fiscal Month", Int64.Type}, {"Fiscal Year", Int64.Type}}),
+    #"Replaced Value null to N on  Gov flag" = Table.ReplaceValue(#"Changed Type",null,"N",Replacer.ReplaceValue,{"Exclude From ETS Governance Flag"}),
+    #"Primary Customer  Conditional Column" = Table.AddColumn(#"Replaced Value null to N on  Gov flag", "Primary Customer", each if [Business Sponsor] <> "None" then [Business Sponsor] else if [Business Owner] <> "None" then [Business Owner] else "None", Text.Type),
+    #"In Gov Pool Conditional Column" = Table.AddColumn(#"Primary Customer  Conditional Column", "In Governance Pool?", each if [Exclude From ETS Governance Flag] = "Y" then "No" else "Yes", Text.Type),
+    #"TD vs BV Conditional Column" = Table.AddColumn(#"In Gov Pool Conditional Column", "TD vs. BV", each if [Work Category] = "Maintenance/Operations" then "TD" else if [Work Category] = "Administration" then "Out" else "BV",Text.Type),
+    #"Gov Cust Conditional Column" = Table.AddColumn(#"TD vs BV Conditional Column", "Governance Cust", each if [Primary Customer] = "DNR" then "No" else if [Primary Customer] = "CONSULTING ERDC" then "No" else if [Primary Customer] = "CONSULTING DRS" then "No" else if [Primary Customer] = "Other" then "No" else if [Primary Customer] = "SLA Contract" then "No" else "Yes", Text.Type),
+    #"Gov Cat Conditional Column" = Table.AddColumn(#"Gov Cust Conditional Column", "Governance Category", each if [TD vs. BV] = "Out" then "No" else "Yes", Text.Type),
+    #"FTE at 130" = Table.AddColumn(#"Gov Cat Conditional Column", "FTE@130", each [Work Activity Hours]/130, Number.Type),
+    #"FTE 130 Changed Type" = Table.TransformColumnTypes(#"FTE at 130",{{"FTE@130", type number}}),
+    #"Cost Center Column" = Table.AddColumn(#"FTE 130 Changed Type", "Cost Center", each Text.End([Primary Customer],4), Text.Type),
+    #"Cost Center Changed Type" = Table.TransformColumnTypes(#"Cost Center Column",{{"Cost Center", type text}}),
+    #"Added Conditional Column Portfolio" = Table.AddColumn(#"Cost Center Changed Type", "Portfolio", each if [Cost Center] = "8312" then "HRMS (8312)" else if [Cost Center] = "8313" then "ENT. Acct- MF (8313)" else if [Cost Center] = "8315" then "ENT. Shared (8315)" else if [Cost Center] = "8316" then "ENT. Budget Apps (8316)" else if [Cost Center] = "8317" then "ENT. State HR (8317)" else if [Cost Center] = "8318" then "ENT. Acct Apps (8318)" else if [Cost Center] = "8319" then "Data/BI (8319)" else if [Cost Center] = "8320" then "Business Analysts (8320)" else if [Cost Center] = "8413" then "OFM/GOV Apps (8413)" else if [Cost Center] = "ther" then "Other" else if [Cost Center] = "8111" then "OFM EndPoint Service (8111)" else if [Cost Center] = "8112" then "OFM Infrastructure (8112)" else if [Cost Center] = "8113" then "OFM HelpDesk (8113" else [Cost Center]),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Added Conditional Column Portfolio",{{"Portfolio", type text}})
+in
+    #"Changed Type1"

@@ -11,3 +11,11 @@ let
     #"Divided Column1" = Table.TransformColumns(#"Divided Column", {{"FY2 Salary & Benefits", each _ / 12, type number}})
 in
     #"Divided Column1"
+	
+	
+	
+	let
+    Source = Excel.CurrentWorkbook(){[Name="SPS_Staff_OI"]}[Content],
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"organization_index", type text}, {"Pos Code", type text}, {"Pos Abbr", type text}, {"Name", type text}, {"Job  Class", type text}, {"Title", type text}, {"PI", type text}, {"Start Date", type datetime}, {"FY1 Salary", type number}, {"FY2 Salary", type number}, {"FY1 Benefits", type number}, {"FY2 Benefits", type number}, {"FY1", type number}, {"FY2", type number}, {"Average", type number}, {"appropriation_index", Int64.Type}, {"proration_pct", Int64.Type}, {"Column18", type any}, {"Column19", type text}})
+in
+    #"Changed Type"
