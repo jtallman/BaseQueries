@@ -1,22 +1,34 @@
-Ultimate Calendar Table
+Ultimate Calendar Table Golden
 
+	When using in Excel after loading the query to to power Pivot Manage 
+	Set the Month and MonthLong columns to sort by MonthNum 
+	Set the FiscalMonth and FiscalMonthLong to sort by FiscalMonthNum
+	Under Design mark the table as a date table 
 
 Changed
-= Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow()))
+	= Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow()))
 To 
-= Date.AddYears(Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow())), 5)
-To add 5 years to the date table. It takes todays date and goes to the end of year then adds 5 years 
+	= Date.AddYears(Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow())), 4)
+	To add 4 years to the date table. It takes todays date and goes to the end of year then adds 5 years 
+
+Added 
+	TTS Avalible Hours  Weekday = 8 weekend day = 0
+
 
 let
     /*
-    ****This Calendar was created and provided by Avi Singh****
+    ****The Orginal Ultimate Calendar was created and provided by Avi Singh****
     ****This can be freely shared as long as this text comment is retained.****
     http://www.youtube.com/PowerBIPro
     www.LearnPowerBI.com by Avi Singh
+    **** Washington State Office of Financial Management****
+     Calendar has been  modified to fit the needs of the Washington State Office of Financial Management
+     Start date set to 2015 to work with TTS Trending data can be adjusted for other data sets
+     End Date changed from calculate to end of current year to calculate the end of the calendar year four years from today's date
     */
     #"LearnPowerBI.com by Avi Singh" = 1,
-    StartDate = #date(2012, 1, 1),
-    EndDate = Date.AddYears(Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow())), 5) /*was "#date(2017, 1, 1)" Updated on 201802027: hard Coded End of Year caused some formulas to break, switching to dynamic date*/,
+    StartDate = #date(2015, 1, 1),
+    EndDate = Date.AddYears(Date.EndOfYear(DateTime.Date(DateTime.FixedLocalNow())), 4),
     //Used for 'Offset' Column calculations, you may Hard code CurrentDate for testing e.g. #date(2017,9,1)
     CurrentDate = DateTime.Date(DateTime.FixedLocalNow()),
     // Specify the last month in your Fiscal Year, e.g. if June is the last month of your Fiscal Year, specify 6
@@ -99,6 +111,11 @@ else "Weekday"),
     #"----WeekSequenceNum Complete----" = #"Replaced Value WeekSequenceNum null with 1",
     Current_WeekSequenceNum = #"----WeekSequenceNum Complete----"{[Date = CurrentDate]}?[WeekSequenceNum],
     #"Added Custom CurWeekOffset" = Table.AddColumn(#"----WeekSequenceNum Complete----", "CurWeekOffset", each [WeekSequenceNum] - Current_WeekSequenceNum, Int64.Type),
-    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom CurWeekOffset",{{"Quarter", type text}, {"FiscalMonth", type text}, {"FiscalMonthLong", type text}, {"FiscalQuarter", type text}, {"FiscalYear", type text}, {"FutureDate", type text}, {"MonthYear", type text}, {"MonthYearLong", type text}, {"WeekdayWeekend", type text}, {"WeekSequenceNum", Int64.Type}, {"CurFiscalYearOffset", Int64.Type}, {"FiscalMonthNum", Int64.Type}})
+    #"Changed Type- offset-fiscal" = Table.TransformColumnTypes(#"Added Custom CurWeekOffset",{{"Quarter", type text}, {"FiscalMonth", type text}, {"FiscalMonthLong", type text}, {"FiscalQuarter", type text}, {"FiscalYear", type text}, {"FutureDate", type text}, {"MonthYear", type text}, {"MonthYearLong", type text}, {"WeekdayWeekend", type text}}),
+    #"Renamed Columns- Year Year Num" = Table.RenameColumns(#"Changed Type- offset-fiscal",{{"Year", "YearNum"}}),
+    #"Inserted Year" = Table.AddColumn(#"Renamed Columns- Year Year Num", "Year", each Date.Year([Date]), Int64.Type),
+    #"Changed Type-Year" = Table.TransformColumnTypes(#"Inserted Year",{{"Year", type text}, {"FiscalMonthNum", Int64.Type}, {"CurFiscalYearOffset", Int64.Type}, {"WeekSequenceNum", Int64.Type}}),
+    #"Added Custom-Available Hours" = Table.AddColumn(#"Changed Type-Year", "TTSAvailableHours", each if[WeekdayWeekend] = "Weekday" then 8 else 0, 
+Int64.Type)
 in
-    #"Changed Type"
+    #"Added Custom-Available Hours"
