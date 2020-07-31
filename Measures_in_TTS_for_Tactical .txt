@@ -4,7 +4,7 @@ Duration = [Maximum Work Activity Date]-[Minimum Work Activity Date]
 
 Gov Pool Staff = CALCULATE([Staff Active Count], TTS_Daily[In Governance Pool?] ="Yes")
 
-Hours Percent = (DIVIDE([RecordedHours], [TTSAvailableHours] )*100)
+Hours Percent = (DIVIDE([RecordedHours], [TTSAvailableHours] )*100) // in Golded PBIX removed *100 and set format as percent 
 
 Maximum Work Activity Date = MAX(TTS_Daily[Work Activity Date])
 
