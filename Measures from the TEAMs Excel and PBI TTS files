@@ -15,10 +15,15 @@ TTS Available MTD
 	)
 
 
+TTSAvailableHours for Period //(this appears to be the same as TTSAvailibleHours in PBIX)
+	=SUM('Ultimate Calendar Table'[TTSAvailableHours])
+
+
+
 Staff Count
 	=DISTINCTCOUNT(TTS_Daily_w_add_columns[Full Name])
 	
-Staff Count 
+Staff Name Count 
 	= DISTINCTCOUNT(TTS_Daily[Full Name])
 	
 Percent MTD
