@@ -1,0 +1,9 @@
+Data Freshness 
+
+File Share
+
+let
+    Source = Folder.Files("\\encmsoly1024\ofm\OFM\ITS\Data_Share\TTS_Data"),
+    #"Filtered Rows" = Table.SelectRows(Source, each ([Name] = "TTS_Daily.xlsx"))
+in
+    #"Filtered Rows"
