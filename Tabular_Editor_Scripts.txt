@@ -1,0 +1,37 @@
+Tabular_Editor_Scripts
+
+C:\Users\james\OneDrive\Documents\GitHub\BaseQueries
+
+
+Formatting All [DAX] Measures at Once with Tabular Editor
+Learn how to leverage tabular editor automation to easily format all the DAX measures in your Power BI (PBIX) model.
+
+CODE SNIPPET 
+foreach (var m in Model.AllMeasures) { m.Expression = FormatDax(m.Expression); }
+
+https://www.havensconsulting.net/blog-and-media/formatting-all-dax-measures-at-once-with-tabular-editor
+
+Showing DAX Expressions When Using Power BI Datasets (Live)
+
+Learn how to display DAX expressions in the description tooltip - when hovering over the measure in the fields list. This can be applied to all measures easily and effortlessly using Tabular Editor.
+
+Code Snippet
+foreach (var m in Model.AllMeasures) { m.Description = m.Expression; } 
+
+
+It occurred to me that moving all columns into a display folder should be the first thing to do with any new model, and that sounds like a great opportunity to write a script (there is a second bonus script at the end of this post too).
+
+foreach (var c in Model.AllColumns)
+    {
+        c.DisplayFolder = "_Columns";  // use double backslash for subfolders, e.g. “_Columns\\subfolder”
+    }
+
+
+Hide Columns in Fact Tables Used in Joins
+foreach (var r in Model.Relationships)
+    {
+        r.FromColumn.IsHidden = true;
+    }
+	
+	
+	
